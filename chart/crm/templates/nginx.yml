@@ -81,10 +81,13 @@ metadata:
 data:
   supervisor-server: |-
     {{- .Files.Get "files/workload/supervisor/conf/server.conf" | nindent 4 }}
+
   server.conf: |-
-    {{- .Files.Get "files/workload/nginx/1.14.0/conf/server.conf" | nindent 4 }}
+    {{- .Files.Get (printf "files/workload/nginx/%s/conf/server.conf" .Values.nginx_version) | nindent 4}}
+
   supervisor.ini: |-
-    {{- .Files.Get "files/workload/nginx/1.14.0/conf/supervisor.ini" | nindent 4 }}
+    {{- .Files.Get (printf "files/workload/nginx/%s/conf/supervisor.ini" .Values.nginx_version) | nindent 4}}
+    
   nginx-app: |-
     {{- .Files.Get "files/stack/crm/nginx/conf/app.conf" | nindent 4 }}
 ---
