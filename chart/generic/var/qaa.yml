@@ -1,4 +1,4 @@
-redis:
+redis-helm:
   global:
     environment: qaa
     home_dir: /opt/kickstart-kubernetes

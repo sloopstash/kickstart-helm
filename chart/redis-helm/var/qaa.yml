@@ -1,4 +1,4 @@
 global:
-  environment: qab
+  environment: qaa
   home_dir: /opt/kickstart-kubernetes
   redis_version: 4.0.9
