@@ -1,0 +1,4 @@
+global:
+  environment: stg
+  home_dir: /opt/kickstart-kubernetes
+  redis_version: 4.0.9

@@ -1,0 +1,6 @@
+dependencies:
+- name: redis-helm
+  repository: oci://registry-1.docker.io/divyapriyamuthuvel
+  version: 1.1.1
+digest: sha256:c6ac1bb9c75716958cb5a8cbe714d2c7e5bc32d20229e28c6aca74f2020b9dbc
+generated: "2025-05-09T13:27:59.796808741+05:30"

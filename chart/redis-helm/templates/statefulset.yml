@@ -1,137 +1,3 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: sloopstash-{{.Values.environment}}-crm-redis-0-data
-spec:
-  storageClassName: standard
-  capacity:
-    storage: 5Gi
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  local:
-    path: /mnt/sloopstash/{{.Values.environment}}/crm/redis/0/data
-  claimRef:
-    namespace: sloopstash-{{.Values.environment}}-crm
-    name: redis-data-redis-0
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-            - key: node-role.kubernetes.io/worker
-              operator: In
-              values:
-                - worker
-            - key: type
-              operator: In
-              values:
-                - on-premise
-                - cloud
-            - key: provider
-              operator: In
-              values:
-                - host
-                - aws
-                - azure
-            - key: service
-              operator: In
-              values:
-                - virtualbox
-                - ec2
-                - eks
-                - aks
-            - key: region
-              operator: In
-              values:
-                - local
-                - ap-south-1
-                - centralindia
-            - key: availability_zone
-              operator: In
-              values:
-                - local-b
-                - ap-south-1b
-                - zone-2
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: sloopstash-{{.Values.environment}}-crm-redis-0-log
-spec:
-  storageClassName: standard
-  capacity:
-    storage: 2Gi
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  local:
-    path: /mnt/sloopstash/{{.Values.environment}}/crm/redis/0/log
-  claimRef:
-    namespace: sloopstash-{{.Values.environment}}-crm
-    name: redis-log-redis-0
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-            - key: node-role.kubernetes.io/worker
-              operator: In
-              values:
-                - worker
-            - key: type
-              operator: In
-              values:
-                - on-premise
-                - cloud
-            - key: provider
-              operator: In
-              values:
-                - host
-                - aws
-                - azure
-            - key: service
-              operator: In
-              values:
-                - virtualbox
-                - ec2
-                - eks
-                - aks
-            - key: region
-              operator: In
-              values:
-                - local
-                - ap-south-1
-                - centralindia
-            - key: availability_zone
-              operator: In
-              values:
-                - local-b
-                - ap-south-1b
-                - zone-2
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis
-  namespace: sloopstash-{{.Values.environment}}-crm
-data:
-  supervisor-server: |-
-    {{- .Files.Get "files/workload/supervisor/conf/server.conf" | nindent 4 }}
-  server.conf: |-
-    {{- .Files.Get (printf "files/workload/redis/%s/conf/server.conf" .Values.redis_version) | nindent 4}}
-  supervisor.ini: |-
-    {{- .Files.Get (printf "files/workload/redis/%s/conf/supervisor.ini" .Values.redis_version) | nindent 4}}
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -192,7 +58,7 @@ spec:
                       - zone-2
       containers:
         - name: main
-          image: sloopstash/redis:v{{.Values.redis_version}}
+          image: sloopstash/redis:v{{.Values.global.redis_version}}
           imagePullPolicy: Always
           command:
             - /usr/bin/supervisord
@@ -230,7 +96,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
         - name: log
-          image: sloopstash/redis:v{{.Values.redis_version}}
+          image: sloopstash/redis:v{{.Values.global.redis_version}}
           imagePullPolicy: IfNotPresent
           command:
             - /usr/bin/supervisord
@@ -286,17 +152,3 @@ spec:
         resources:
           requests:
             storage: 2Gi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-  labels:
-    service: redis
-spec:
-  ports:
-    - port: 3000
-      targetPort: 3000
-      protocol: TCP
-  selector:
-    service: redis
